@@ -59,8 +59,7 @@ The following PNGs must be in your `screenshots/` folder for GUI automation. The
 | `confirm_save_as.png`    | Confirm Save As dialog is focused/ready          |
 | `start_data_collect.png` | Start data collection                            |
 | `stop_data_collect.png`  | Stop data collection                             |
-| `users.png`              | "CSV File" UQD's GUI tag
-(Optional) user/role dialogs or user prompts     |
+| `users.png`              | "CSV File" UQD's GUI tag    |
 
 - If your UQD interface or display scaling changes, recapture new screenshots.
 - If you get "template not found" errors, check for typos, cropping, or wrong folder.
