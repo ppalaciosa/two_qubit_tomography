@@ -61,8 +61,9 @@ The following PNGs must be in your `screenshots/` folder for GUI automation. The
 | `stop_data_collect.png`  | Stop data collection                             |
 | `users.png`              | "CSV File" UQD's GUI tag    |
 
-- If your UQD interface or display scaling changes, recapture new screenshots.
 - If you get "template not found" errors, check for typos, cropping, or wrong folder.
+
+> ⚠️ **Note:** The screenshot files in the `screenshots/` folder must be captured on the same computer and with the same screen resolution, scaling, and monitor arrangement as where you will run the UQD GUI. If any of these conditions change, the screenshot templates may no longer match!
 
 ---
 
@@ -106,7 +107,7 @@ The file `motion_tomography_kwiat.txt`  is included, containing a standard measu
 ### **Recommended: All-in-one Orchestrator**
 
 ```sh
-python run_experiment_and_process.py     --motion motion.txt     --stages 1,2,3,4     --wait 10     --desc my_table_run     --column "Pattern 01[counts]"     --process
+python run_experiment_and_process.py --motion motion.txt --stages 1,2,3,4 -wait 10 --desc my_table_run --column "Pattern 01[counts]" --process
 ```
 
 - Data files will be named `comboNNN.csv` or with your custom label.
