@@ -12,10 +12,11 @@ Main orchestrator for a two-qubit tomography experiment:
 import argparse
 from pathlib import Path
 import sys
+sys.path.insert(0, str(Path(__file__).parent / "newportxps_control"))
 
 # Import experiment's routines (must be in the same folder or PYTHONPATH)
 from two_qubit_tomography_xps import measurement
-from newportxps_control.newportxpslib.xps_session import XPSMotionSession
+from newportxpslib.xps_session import XPSMotionSession
 
 # Import the averaging helper from your processing code.
 from process_uqd_results import average_column_in_file  
@@ -81,7 +82,8 @@ def main():
     stages = [int(x) for x in args.stages.split(",")]
 
     # --- 1. Run the XPS measurement routine
-    session = XPSMotionSession(stages=stages, skip_prep=False, verbose=True)
+    session = XPSMotionSession(stages=stages, verbose=True)
+
     measurement(
         session,
         args.motion,

@@ -12,13 +12,22 @@ Automated multi-stage measurement routine for Newport XPS systems, using pre-def
 Place screenshots (e.g., csv_file_tag.png, save_file_dialog.png, etc.) in a 'screenshots/' folder
 and run from your project root.
 """
+
+import sys
+from pathlib import Path
+
+# Make the nested newportxpslib folder importable as top-level 'newportxpslib'
+sys.path.insert(0, str(Path(__file__).parent / "newportxps_control"))
+
 import pyautogui as pag
 import pygetwindow as gw
 from pathlib import Path
 from time import sleep, time
 from datetime import datetime
 
-from newportxps_control.newportxpslib.xps_session import XPSMotionSession
+from newportxpslib.xps_session import XPSMotionSession
+from newportxpslib.controller_interface import initialize_groups, home_groups
+from newportxpslib.xps_config import load_full_config, load_user_credentials
 
 # -------------------------------
 # Exception for GUI automation errors, e.g. mouse interference or template match fail
@@ -152,6 +161,17 @@ def measurement(session: XPSMotionSession, combinations_file, iteration_time, de
     """
     if len(session.stages) != 4:
         raise ValueError("two_qubit_tomography_xps.py requires exactly 4 stages.")
+    # Number of stages we’re driving:
+    n_stages = len(session.stages)
+
+    # Setting up the XPS unit
+    print("Loading XPS config and credentials...")
+    load_user_credentials()
+    load_full_config()
+    print("Initializing and homing all XPS groups (one time)...")
+    initialize_groups(session.xps)
+    home_groups(session.xps, force_home=True)
+    print("XPS system ready for motion!")
 
     combos = load_combinations(combinations_file, n_stages)
     if not combos:
@@ -165,7 +185,8 @@ def measurement(session: XPSMotionSession, combinations_file, iteration_time, de
 
     # Activate UQD window
     try:
-        uqd_win = gw.getWindowsWithTitle("UQD Logic 16 Correlation Viewer  - V0.35 - 21.04.2021")[0]
+        uqd_win = gw.getWindowsWithTitle(
+            "UQD Logic 16 Correlation Viewer  - V0.35 - 21.04.2021")[0]
         uqd_win.activate()
         sleep(1.5)
     except Exception:
@@ -192,7 +213,7 @@ def measurement(session: XPSMotionSession, combinations_file, iteration_time, de
 
         # 1. Move all stages (zero-offsets, range, and errors handled by the library)
         move_ok = session.move_motors(*combo)
-        if not move_ok:
+        if move_ok is False:
             print(f"[Warning] Skipping '{filename}' due to move error (out of range or not ready).")
             continue
         sleep(wait_initial_move)
@@ -280,7 +301,7 @@ def measurement(session: XPSMotionSession, combinations_file, iteration_time, de
 # -------------------------------
 if __name__ == "__main__":
     # Always use four stages (IDs 1-4 by default, or adjust if your config uses different names/order)
-    session = XPSMotionSession(stages=[1, 2, 3, 4], skip_prep=False)
+    session = XPSMotionSession(stages=[1, 2, 3, 4], verbose=True)
     # Arguments: session, combinations_file, iteration_time (seconds), description
     measurement(
         session,
